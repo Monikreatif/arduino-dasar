@@ -1,0 +1,73 @@
+#include <LiquidCrystal.h>
+
+// Inisialisasi pin LCD: RS, E, D4, D5, D6, D7
+LiquidCrystal lcd(12, 10, 5, 4, 3, 2);
+
+// Pin untuk potensiometer
+const int potPinL = A0; // Potensio untuk volume kiri
+const int potPinR = A1; // Potensio untuk volume kanan
+
+int volumeL = 0;
+int volumeR = 0;
+
+// Membuat custom karakter untuk animasi (bar loading)
+byte loadingBar[8] = {
+  0b10000,
+  0b01000,
+  0b00100,
+  0b00010,
+  0b00010,
+  0b00100,
+  0b01000,
+  0b10000
+};
+
+void setup() {
+  lcd.begin(16, 2); // Set ukuran LCD 16x2
+
+  // Buat karakter khusus untuk animasi loading
+  lcd.createChar(0, loadingBar);
+  
+  // Tampilkan pesan awal animasi loading
+  lcd.setCursor(0, 0);
+  lcd.print("Loading...");
+
+  // Animasi loading (mengisi bar satu per satu)
+  for (int i = 0; i < 16; i++) {
+    lcd.setCursor(i, 1);
+    lcd.write(byte(0));
+    delay(1000);          
+  }
+  lcd.clear();
+  lcd.setCursor(4, 0);
+  lcd.print("PROPESIONAL");
+    lcd.setCursor(0, 1);
+  lcd.print("POWER AMPLIFIER");
+
+}
+
+void loop() {
+  // Baca nilai potensio
+  int sensorValueL = analogRead(potPinL); 
+  int sensorValueR = analogRead(potPinR);
+  
+  // Konversi nilai potensio ke persentase (0-100)
+  volumeL = map(sensorValueL, 0, 1023, 0, 100); 
+  volumeR = map(sensorValueR, 0, 1023, 0, 100);
+  
+  // Tampilkan nilai volume kiri (L)
+  lcd.setCursor(0, 0);
+  lcd.print("L: "); 
+  lcd.setCursor(3, 0);
+  lcd.print(volumeL);
+  lcd.print("%");
+  lcd.print(" ");
+
+  // Tampilkan nilai volume kanan (R)
+  lcd.setCursor(0, 1);
+  lcd.print("R: ");
+  lcd.setCursor(3, 1);
+  lcd.print(volumeR);
+  lcd.print("%");     
+   lcd.print(" ");  
+}
